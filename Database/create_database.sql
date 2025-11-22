@@ -51,6 +51,16 @@ foreign key(PID) references Products(PID) ON delete cascade,
 foreign key(EmailID) references Users(EmailID) ON delete cascade)
 ENGINE =InnoDB DEFAULT charset=utf8mb4;
 
+CREATE TABLE Review_Upvotes (
+    UpvoteID INT AUTO_INCREMENT PRIMARY KEY,
+    FeedBackID INT NOT NULL,
+    VoterEmail VARCHAR(100) NOT NULL,
+    UNIQUE (FeedBackID, VoterEmail),
+    FOREIGN KEY (FeedBackID) REFERENCES Feedbacks(FeedBackID) ON DELETE CASCADE,
+    FOREIGN KEY (VoterEmail) REFERENCES Users(EmailID) ON DELETE CASCADE
+)ENGINE =InnoDB DEFAULT charset=utf8mb4;
+
+
 Create table Category(
 CategoryID INT primary key,
 CategoryName varchar(50) NOT NULL
@@ -79,4 +89,3 @@ Primary key(OrderID,PID),
 foreign key(OrderID) references Orders(OrderID) ON DELETE CASCADE,
 foreign key(PID) references Products(PID) ON DELETE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
