@@ -1,25 +1,43 @@
--- Trigger for reducing stock of a product when an order is placed
-Delimiter $$
-Create trigger trg_reduce_stock
-before insert on order_details
-for each row 
-begin
-call ReduceStocks(new.PID,new.Order_Qty);
-end$$
-delimiter ;
--- Trigger to validate feedback
+-- ============================================
+-- TRIGGER: Reduce stock when an order is placed
+-- ============================================
 DELIMITER $$
-CREATE TRIGGER trg_validate_feedback
-BEFORE INSERT ON FeedBacks
+
+CREATE TRIGGER trg_reduce_stock
+BEFORE INSERT ON Order_Details
 FOR EACH ROW
 BEGIN
-    CALL ValidateFeedbackSafe(NEW.Rating, NEW.Review);
+    CALL ReduceStocks(NEW.PID, NEW.Order_Qty);
 END $$
+
 DELIMITER ;
 
 
--- Trigger to prevent negative stock
+
+-- ============================================
+-- TRIGGER: Validate feedback before insertion
+-- NOTE: Your trigger calls "ValidateFeedbackSafe"
+-- but your procedure is named "ValidateFeedback".
+-- I am fixing it to "ValidateFeedback"
+-- ============================================
 DELIMITER $$
+
+CREATE TRIGGER trg_validate_feedback
+BEFORE INSERT ON Feedbacks
+FOR EACH ROW
+BEGIN
+    CALL ValidateFeedback(NEW.Rating, NEW.Review);
+END $$
+
+DELIMITER ;
+
+
+
+-- ============================================
+-- TRIGGER: Prevent stock from going negative
+-- ============================================
+DELIMITER $$
+
 CREATE TRIGGER trg_prevent_negative_stock
 BEFORE UPDATE ON Lists
 FOR EACH ROW
@@ -29,55 +47,82 @@ BEGIN
         SET MESSAGE_TEXT = 'Stock cannot be negative.';
     END IF;
 END $$
+
 DELIMITER ;
 
--- Trigger to remove products from lists after deleted from Products relation
+
+
+-- ============================================
+-- TRIGGER: Cleanup seller lists if product deleted
+-- ============================================
 DELIMITER $$
+
 CREATE TRIGGER trg_cleanup_lists
 AFTER DELETE ON Products
 FOR EACH ROW
 BEGIN
     DELETE FROM Lists WHERE PID = OLD.PID;
 END $$
+
 DELIMITER ;
 
--- Trigger to increase upvotes
-delimiter $$
-create trigger trg_inc_upvotes
-after insert on Review_Upvotes
-for each row 
-begin
-update feedbacks
-set upvotes=upvotes+1
-where feedbackID =new.feedbackID;
-end $$
-delimiter ;
 
--- Trigger to decrease upvotes
-delimiter $$
-create trigger trg_dec_upvotes
-after delete on Review_Upvotes
-for each row 
-begin
-update feedbacks
-set upvotes=upvotes-1
-where feedbackID =old.feedbackID;
-end $$
-delimiter ;
 
--- Trigger to prevent self upvote
-delimiter $$
-create trigger trg_no_self_upvotes
-after insert on Review_Upvotes
-for each row 
-begin
-declare author varchar(100);
-select emailID into author 
-from feedbacks
-where feedbackID= new.feedbackID;
-if author=new.voteremail then
-signal sqlstate '45000'
-set message_text='You cannot upvote your own review';
-end if;
-end $$
-delimiter ;
+-- ============================================
+-- TRIGGER: Increase upvotes on review upvote
+-- ============================================
+DELIMITER $$
+
+CREATE TRIGGER trg_inc_upvotes
+AFTER INSERT ON Review_Upvotes
+FOR EACH ROW
+BEGIN
+    UPDATE Feedbacks
+    SET Upvotes = Upvotes + 1
+    WHERE FeedBackID = NEW.FeedBackID;
+END $$
+
+DELIMITER ;
+
+
+
+-- ============================================
+-- TRIGGER: Decrease upvotes when upvote removed
+-- ============================================
+DELIMITER $$
+
+CREATE TRIGGER trg_dec_upvotes
+AFTER DELETE ON Review_Upvotes
+FOR EACH ROW
+BEGIN
+    UPDATE Feedbacks
+    SET Upvotes = Upvotes - 1
+    WHERE FeedBackID = OLD.FeedBackID;
+END $$
+
+DELIMITER ;
+
+
+
+-- ============================================
+-- TRIGGER: Prevent users from upvoting own review
+-- ============================================
+DELIMITER $$
+
+CREATE TRIGGER trg_no_self_upvotes
+AFTER INSERT ON Review_Upvotes
+FOR EACH ROW
+BEGIN
+    DECLARE author VARCHAR(100);
+
+    SELECT EmailID INTO author
+    FROM Feedbacks
+    WHERE FeedBackID = NEW.FeedBackID;
+
+    IF author = NEW.VoterEmail THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'You cannot upvote your own review';
+    END IF;
+END $$
+
+DELIMITER ;

@@ -1,56 +1,90 @@
--- Procedure to reduce stocks after an order
-Delimiter $$
-Create procedure ReduceStocks(
-IN P_pid varchar(30),
-IN p_qty INT)
-begin
-declare available INT;
-select stock into available
-from lists 
-where PID=P_pid
-limit 1;
-if available is null then
-signal sqlstate '45000'
-set message_text= 'Product not found in seller List';
-end if;
-if available < p_qty then
-signal sqlstate '45000'
-set message_text= 'Insufficient stock for this product';
-end if;
-update lists
-set stock =stock - p_qty
-where PID=P_pid;
-end$$
-delimiter ;
+-- ============================================
+-- PROCEDURE: ReduceStocks
+-- Reduces stock of a product after an order
+-- ============================================
+DELIMITER $$
 
--- Procedure to add a new product to lists
-Delimiter $$
-Create procedure AddProduct(
-IN p_EmailID varchar(100),
-IN P_pid varchar(30),
-IN p_stock INT)
-begin
-if p_stock< 0 then
-signal sqlstate '45000'
-set message_text= 'Stock cannot be negative';
-end if;
-Insert into lists(EmailID,PID,Stock)
-values (p_EmailID ,p_pid ,p_stock);
-end$$
-delimiter ;
+CREATE PROCEDURE ReduceStocks(
+    IN p_PID VARCHAR(30),
+    IN p_Qty INT
+)
+BEGIN
+    DECLARE available INT;
 
--- Procedure to assign category to product
-delimiter $$
-Create procedure AssignCategory(
-IN p_PID varchar(30),
-IN p_CategoryID INT)
-begin
-Insert into Product_Category(PID,CategoryID) VALUES(p_PID, p_CategoryID);
+    SELECT Stock INTO available
+    FROM Lists
+    WHERE PID = p_PID
+    LIMIT 1;
+
+    IF available IS NULL THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Product not found in seller list';
+    END IF;
+
+    IF available < p_Qty THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Insufficient stock for this product';
+    END IF;
+
+    UPDATE Lists
+    SET Stock = Stock - p_Qty
+    WHERE PID = p_PID;
 END $$
+
 DELIMITER ;
 
--- Procedure to validate feedbacks
+
+
+-- ============================================
+-- PROCEDURE: AddProduct
+-- Adds a product to seller's list
+-- ============================================
 DELIMITER $$
+
+CREATE PROCEDURE AddProduct(
+    IN p_EmailID VARCHAR(100),
+    IN p_PID VARCHAR(30),
+    IN p_Stock INT
+)
+BEGIN
+    IF p_Stock < 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stock cannot be negative';
+    END IF;
+
+    INSERT INTO Lists (EmailID, PID, Stock)
+    VALUES (p_EmailID, p_PID, p_Stock);
+END $$
+
+DELIMITER ;
+
+
+
+-- ============================================
+-- PROCEDURE: AssignCategory
+-- Assigns a category to a product
+-- ============================================
+DELIMITER $$
+
+CREATE PROCEDURE AssignCategory(
+    IN p_PID VARCHAR(30),
+    IN p_CategoryID INT
+)
+BEGIN
+    INSERT INTO Product_Category (PID, CategoryID)
+    VALUES (p_PID, p_CategoryID);
+END $$
+
+DELIMITER ;
+
+
+
+-- ============================================
+-- PROCEDURE: ValidateFeedback
+-- Validates rating and review text
+-- ============================================
+DELIMITER $$
+
 CREATE PROCEDURE ValidateFeedback(
     IN p_Rating INT,
     IN p_Review TEXT
@@ -66,4 +100,5 @@ BEGIN
         SET MESSAGE_TEXT = 'Review cannot be empty.';
     END IF;
 END $$
+
 DELIMITER ;
