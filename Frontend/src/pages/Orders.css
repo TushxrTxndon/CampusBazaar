@@ -1,0 +1,159 @@
+.orders-page {
+  padding: 40px 0;
+  min-height: calc(100vh - 200px);
+}
+
+.auth-required {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.auth-required h2 {
+  font-size: 28px;
+  margin-bottom: 24px;
+  color: var(--dark);
+}
+
+.no-orders {
+  text-align: center;
+  padding: 80px 20px;
+}
+
+.no-orders-icon {
+  font-size: 80px;
+  margin-bottom: 24px;
+  opacity: 0.5;
+}
+
+.no-orders h2 {
+  font-size: 28px;
+  margin-bottom: 12px;
+  color: var(--dark);
+}
+
+.no-orders p {
+  font-size: 16px;
+  color: var(--gray);
+  margin-bottom: 32px;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.order-card {
+  padding: 24px;
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.order-id {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--dark);
+}
+
+.order-date {
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.order-status {
+  padding: 6px 12px;
+  background: var(--success);
+  color: var(--white);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.order-items {
+  margin-bottom: 20px;
+}
+
+.order-items {
+  margin-bottom: 20px;
+}
+
+.order-items-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--dark);
+}
+
+.order-items-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: var(--bg);
+  border-radius: 8px;
+}
+
+.order-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.order-item-name {
+  font-weight: 500;
+  color: var(--dark);
+}
+
+.order-item-qty {
+  font-size: 14px;
+  color: var(--gray);
+}
+
+.order-item-price {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+.no-items {
+  color: var(--gray);
+  font-style: italic;
+  padding: 12px;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.order-total {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
+  .order-header {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+

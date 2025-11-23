@@ -30,6 +30,16 @@ Description TEXT NOT NULL,
 Price DECIMAL(10,2) NOT NULL)
 ENGINE =InnoDB DEFAULT charset=utf8mb4;
 
+
+CREATE TABLE IF NOT EXISTS Product_Images (
+    ImageID INT AUTO_INCREMENT PRIMARY KEY,
+    PID VARCHAR(30) NOT NULL,
+    ImageURL VARCHAR(255) NOT NULL,
+    DisplayOrder INT DEFAULT 0,
+    FOREIGN KEY (PID) REFERENCES Products(PID) ON DELETE CASCADE,
+    INDEX idx_pid (PID)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 Create table Lists(
 EmailID varchar(100),
 PID varchar(30),
